@@ -74,4 +74,4 @@ def model_serve():
     return str(output[0])
 
 if __name__ == '__main__':
-    app.run(port=2000)
+    app.run(port=8080)
