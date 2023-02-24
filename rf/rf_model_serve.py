@@ -43,7 +43,11 @@ def scale_input(list_params):
 def predict(scaled_params):
     return model.predict(scaled_params)
 
-@app.route("/")
+@app.route('/')
+def front():
+    return 'RandomForest' 
+
+@app.route("/predict")
 def model_serve():
     dict_params = {}
 

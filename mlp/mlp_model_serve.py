@@ -1,16 +1,16 @@
 print ('iniciando')
 from flask import Flask;print ('flask')
 from flask import request;print ('request')
-import pickle;print ('pickle')
 import os;print ('os')
-import sklearn;print ('sklearn')
+#import sklearn;print ('sklearn')
 import json;print ('json')
 import numpy as np;print('numpy')
+import pickle;print('pickle')
+from tensorflow.keras.models import load_model;print('tensorflow.keras.models.load_model')
 
 app = Flask(__name__)
 
-with open (os.path.join(os.getcwd(), 'mlp_model.pkl'),'rb') as picklefile:
-    model = pickle.load(picklefile)
+model = load_model(os.path.join(os.getcwd(), 'mlp_model.h5'))
 
 with open (os.path.join(os.getcwd(), 'standard_scaler_15col.pkl'),'rb') as picklefile:
     sc = pickle.load(picklefile)
@@ -43,7 +43,11 @@ def scale_input(list_params):
 def predict(scaled_params):
     return model.predict(scaled_params)
 
-@app.route("/")
+@app.route('/')
+def front():
+    return 'MLP' 
+
+@app.route("/predict")
 def model_serve():
     dict_params = {}
 

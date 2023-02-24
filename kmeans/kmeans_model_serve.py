@@ -41,7 +41,11 @@ def scale_input(list_params):
 def predict(scaled_params):
     return model.predict(scaled_params)
 
-@app.route("/")
+@app.route('/')
+def front():
+    return 'kmeans' 
+
+@app.route("/predict")
 def model_serve():
     dict_params = {}
     dict_params.update({'gender':request.args.get('gender').lower()})
@@ -56,4 +60,4 @@ def model_serve():
     return str(output[0])
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(host = '0.0.0.0', port=8080)
