@@ -5,7 +5,7 @@ COPY . /modelserver
 
 WORKDIR /modelserver
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt  -v --no-cache-dir
 
 VOLUME /modelserver
 
