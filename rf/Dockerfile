@@ -5,7 +5,9 @@ COPY . /modelserver
 
 WORKDIR /modelserver
 
-RUN pip install -r requirements.txt -v
+RUN pip install --upgrade pip
+
+RUN pip install -r requirements.txt --no-cache-dir -v
 
 VOLUME /modelserver
 
