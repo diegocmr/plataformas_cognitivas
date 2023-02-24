@@ -1,11 +1,23 @@
 FROM python:3.10.2
 
+RUN apt-get update
+RUN apt-get upgrade
+RUN apt-get install nano
+
 RUN mkdir -p modelserver
 COPY . /modelserver
 
 WORKDIR /modelserver
 
-RUN pip install -r requirements.txt -v --no-cache-dir
+RUN pip install --upgrade pip
+
+RUN pip install flask --no-cache-dir -v
+
+RUN pip install numpy --no-cache-dir -v
+
+RUN pip install tensorflow --no-cache-dir -v
+
+RUN pip install scikit-learn --no-cache-dir -v
 
 VOLUME /modelserver
 
