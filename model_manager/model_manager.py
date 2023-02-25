@@ -11,20 +11,8 @@ app = Flask(__name__)
 def get_url(model,dict_params):
     protocol = 'http://'
     endpoint = '/predict'
-    
-    # entendendo ip's do arquivo gerado por bash
-    model_ip = {}
-    with open ('inspected_network.json', 'r') as inspectfile:
-        txt = inspectfile.read()
-        jsonstr = json.loads(txt)
-        for container in jsonstr[0]['Containers']:
-            if jsonstr[0]['Containers'][container]['Name'] in ['kmeans', 'rf', 'mlp']:
-                model_ip.update({jsonstr[0]['Containers'][container]['Name']:jsonstr[0]['Containers'][container]['IPv4Address'].split('/')[0]})
-    ip_address = model_ip[model]
-
     ip_address = model
 
-    model_port = {'kmeans':'1000','rf':'2000','mlp':'3000'}
     model_port = {'kmeans':'8080','rf':'8080','mlp':'8080'}
     port = model_port[model]
     
