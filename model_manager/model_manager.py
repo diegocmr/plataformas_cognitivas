@@ -22,7 +22,10 @@ def get_url(model,dict_params):
                 model_ip.update({jsonstr[0]['Containers'][container]['Name']:jsonstr[0]['Containers'][container]['IPv4Address'].split('/')[0]})
     ip_address = model_ip[model]
 
+    ip_address = model
+
     model_port = {'kmeans':'1000','rf':'2000','mlp':'3000'}
+    model_port = {'kmeans':'8080','rf':'8080','mlp':'8080'}
     port = model_port[model]
     
     model_params = {
