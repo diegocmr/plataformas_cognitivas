@@ -1,0 +1,1 @@
+sudo docker inspect plataformas_cognitivas > inspected_network.json
