@@ -5,8 +5,22 @@ import requests;print ('requests')
 import os;print ('os')
 import json;print ('json')
 import numpy as np;print('numpy')
+import datetime;print('datetime')
 
 app = Flask(__name__)
+
+#criando pasta de logs
+try:
+    os.mkdir('logs')
+except:
+    pass
+
+current_datetime = str(datetime.datetime.now())
+
+def write_log(dict_log):
+    filename = current_datetime.replace(' ','_').replace(':','_')+'_log.json'
+    with open (os.path.join(os.getcwd(),'logs', filename), 'w') as writefile:
+        json.dump(dict_log, writefile, indent = 4)
 
 def get_url(model,dict_params):
     protocol = 'http://'
@@ -33,19 +47,27 @@ def get_url(model,dict_params):
                           'occupancy_type','total_units'
                           ,'income','credit_type','age']}
     
-    str_post = protocol + ip_address + ':' + port + endpoint + '?'
+    str_params = protocol + ip_address + ':' + port + endpoint + '?'
     i = 0
     for param in range(0, len(model_params[model])):
-        str_post = str_post + model_params[model][i] + '=' + dict_params[model_params[model][i]]
+        str_params = str_params + model_params[model][i] + '=' + dict_params[model_params[model][i]]
         if i != len(model_params[model])-1:
-            str_post = str_post + '&'
+            str_params = str_params + '&'
         i = i+1
 
-    return str_post
+    return str_params
 
 @app.route('/')
 def front():
     return 'Model Manager' 
+
+@app.route('/view_logs')
+def view_log():
+    list_logs = []
+    for file in sorted(os.listdir(os.path.join(os.getcwd(), 'logs'))):
+        with open (os.path.join(os.getcwd(), 'logs',file), 'r') as jsonfile:
+            list_logs.append(json.load(jsonfile))
+    return str(list_logs)
 
 @app.route("/route")
 def rout_to_model():
@@ -54,6 +76,7 @@ def rout_to_model():
         raise Exception ('modelo inexistente!')
 
     dict_params = {}
+    dict_log = {'time':current_datetime}
 
     dict_params.update({'loan_limit':request.args.get('loan_limit')})
     dict_params.update({'gender':request.args.get('gender')})
@@ -71,20 +94,32 @@ def rout_to_model():
     dict_params.update({'credit_type':request.args.get('credit_type')})
     dict_params.update({'age':request.args.get('age')})
 
-    str_post = get_url(model,dict_params)
-    print ('enviando requisição para', str_post)
+    dict_log.update({'params':[param+'='+dict_params[param] for param in dict_params]})
 
-    req = str(requests.get(str_post).content).replace('b', '').replace("'", '')
-    if model == 'mlp':
-        req=req.replace('[','').replace(']','')
-        if 'e' in req:
-            np.set_printoptions(suppress=True)
-            num = float(req.split('e')[0])
-            exp = int(req.split('e')[1])
-            print (num, exp)
-            req = str(round(np.power(num,exp),6))
+    str_params = get_url(model,dict_params)
+    print ('enviando requisição para', str_params)
 
-    print (req)
+    dict_log.update({'model_request_url':str_params})
+
+    try:
+        req = str(requests.get(str_params).content).replace('b', '').replace("'", '')
+        if model == 'mlp':
+            req=req.replace('[','').replace(']','')
+            if 'e' in req:
+                np.set_printoptions(suppress=True)
+                num = float(req.split('e')[0])
+                exp = int(req.split('e')[1])
+                print (num, exp)
+                req = str(round(np.power(num,exp),6))
+
+        print (req)
+    
+    except:
+        req = 'FALHA NA REQUISICAO'
+    
+    dict_log.update({'predict':req})
+
+    write_log(dict_log)
 
     return req
 
