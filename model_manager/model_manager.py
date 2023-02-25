@@ -15,10 +15,9 @@ try:
 except:
     pass
 
-current_datetime = str(datetime.datetime.now())
 
 def write_log(dict_log):
-    filename = current_datetime.replace(' ','_').replace(':','_')+'_log.json'
+    filename = str(datetime.datetime.now()).replace(' ','_').replace(':','_')+'_log.json'
     with open (os.path.join(os.getcwd(),'logs', filename), 'w') as writefile:
         json.dump(dict_log, writefile, indent = 4)
 
@@ -63,11 +62,14 @@ def front():
 
 @app.route('/view_logs')
 def view_log():
-    list_logs = []
+    dict_logs = {}
     for file in sorted(os.listdir(os.path.join(os.getcwd(), 'logs'))):
         with open (os.path.join(os.getcwd(), 'logs',file), 'r') as jsonfile:
-            list_logs.append(json.load(jsonfile))
-    return str(list_logs)
+            jsonlog = json.load(jsonfile)
+            filetime = jsonlog['time']
+            dict_logs.update({filetime:jsonlog})
+        
+    return str(dict_logs)
 
 @app.route("/route")
 def rout_to_model():
@@ -76,7 +78,7 @@ def rout_to_model():
         raise Exception ('modelo inexistente!')
 
     dict_params = {}
-    dict_log = {'time':current_datetime}
+    dict_log = {'time':str(datetime.datetime.now()), 'model':model}
 
     dict_params.update({'loan_limit':request.args.get('loan_limit')})
     dict_params.update({'gender':request.args.get('gender')})
